@@ -1,10 +1,28 @@
 import 'package:dbsqflite2/display.dart';
 import 'package:dbsqflite2/insert.dart';
 import 'package:flutter/material.dart';
-import './dbhelper.dart';
-import './insert.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-void main() => runApp(MaterialApp(home: MyApp()));
+import 'dbhelper.dart';
+import 'insert.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  var initializationSettingsAndroid =
+      AndroidInitializationSettings('codex_logo');
+  var initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onSelectNotification: (String payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: ' + payload);
+    }
+  });
+  runApp(MaterialApp(home: MyApp(), debugShowCheckedModeBanner: false));
+}
 
 class MyApp extends StatefulWidget {
   @override

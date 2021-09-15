@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:dbsqflite2/models/todo_list.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -13,8 +14,8 @@ class DatabaseHelper {
   static final colDesc = "desc";
   static final colTime = "time";
 
-  DatabaseHelper._privateConstructor();
-  static final DatabaseHelper instacne = DatabaseHelper._privateConstructor();
+  DatabaseHelper._createInstance();
+  static final DatabaseHelper instacne = DatabaseHelper._createInstance();
 
   static Database _database;
   Future<Database> get get_database async {
@@ -39,9 +40,10 @@ class DatabaseHelper {
     ''');
   }
 
-  Future<int> insert(Map<String, dynamic> row) async {
+  void insert(ToDoList toDoList) async {
     Database db = await instacne.get_database;
-    return await db.insert(tableName, row);
+    var result = await db.insert(tableName, toDoList.toMap());
+    print("Insert Result : $result");
   }
 
   Future<List<Map<String, dynamic>>> queryAll() async {
@@ -49,23 +51,38 @@ class DatabaseHelper {
     return await db.query(tableName);
   } //return List Map <String , {dynamic> "id":1, "name": "Name"}
 
-  Future<int> update(Map<String, dynamic> row) async {
-    Database db = await instacne.get_database;
-    int id = row[colId];
-    return await db
-        .update(tableName, row, where: '$colId = ?', whereArgs: [id]);
-  }
+  // Future<int> update(Map<String, dynamic> row) async {
+  //   Database db = await instacne.get_database;
+  //   int id = row[colId];
+  //   return await db
+  //       .update(tableName, row, where: '$colId = ?', whereArgs: [id]);
+  // }
 
-  Future<int> delete(int id) async {
+  delete(int id) async {
     Database db = await instacne.get_database;
     return await db.delete(tableName, where: '$colId = ?', whereArgs: [id]);
   }
 
-  Future<int> getCount() async {
+  getCount() async {
     Database db = await instacne.get_database;
     List<Map<String, dynamic>> x =
         await db.rawQuery('SELECT COUNT (*) from $tableName');
+    print("x : $x");
     int result = Sqflite.firstIntValue(x);
+    print("result get count : $result");
     return result;
+  }
+
+  Future<List<ToDoList>> getAlarms() async {
+    List<ToDoList> _alarms = [];
+
+    var db = await instacne.get_database;
+    var result = await db.query(tableName);
+    result.forEach((element) {
+      var alarmInfo = ToDoList.fromMap(element);
+      _alarms.add(alarmInfo);
+    });
+
+    return _alarms;
   }
 }
