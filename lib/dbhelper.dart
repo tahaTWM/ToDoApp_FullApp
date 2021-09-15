@@ -30,20 +30,22 @@ class DatabaseHelper {
     return await openDatabase(path, version: dbVersion, onCreate: onCreate);
   }
 
-  Future onCreate(Database db, int version) {
+  onCreate(Database db, int version) {
     db.execute('''
       CREATE TABLE $tableName (
-      $colId INTEGER PRIMARY KEY,
+      $colId INTEGER PRIMARY KEY AUTOINCREMENT,
       $colTitle TEXT,
       $colDesc TEXT,
       $colTime TEXT)
     ''');
   }
 
-  void insert(ToDoList toDoList) async {
+  insert(ToDoList toDoList) async {
+    print(toDoList.title + "  " + toDoList.desc + "    " + toDoList.time);
     Database db = await instacne.get_database;
     var result = await db.insert(tableName, toDoList.toMap());
     print("Insert Result : $result");
+    return result;
   }
 
   Future<List<Map<String, dynamic>>> queryAll() async {

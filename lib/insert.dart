@@ -1,4 +1,4 @@
-import 'package:dbsqflite2/display.dart';
+// ignore_for_file: deprecated_member_use
 import 'package:dbsqflite2/main.dart';
 import 'package:dbsqflite2/models/todo_list.dart';
 import 'package:flutter/material.dart';
@@ -20,113 +20,115 @@ class _InsertState extends State<Insert> {
   DatabaseHelper _databaseHelper;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: TextField(
-                  maxLength: 8,
-                  controller: titleController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'To_Do Title',
-                  ),
-                  onSubmitted: (value) => insertToDo(),
+    return SafeArea(
+      child: Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                maxLength: 8,
+                controller: titleController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'ToDo Title',
                 ),
+                onSubmitted: (value) => insertToDo(),
               ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: TextField(
-                  maxLength: 15,
-                  controller: descController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'To_Do Description',
-                  ),
-                  onSubmitted: (value) => insertToDo(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                maxLength: 15,
+                controller: descController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'ToDo Description',
                 ),
+                onSubmitted: (value) => insertToDo(),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    children: [
-                      //time picker
-                      FlatButton.icon(
-                        onPressed: () {
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    //time picker
+                    FlatButton.icon(
+                      onPressed: () {
+                        _selectTime(context);
+                      },
+                      icon: Icon(Icons.timer),
+                      label: Text("Time Picker"),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
+                      child: GestureDetector(
+                        child: Text(
+                          _timepic,
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        ),
+                        onTap: () {
                           _selectTime(context);
                         },
-                        icon: Icon(Icons.timer),
-                        label: Text("Time Picker"),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
-                        child: GestureDetector(
-                          child: Text(
-                            _timepic,
-                            style: TextStyle(fontSize: 16, color: Colors.black),
-                          ),
-                          onTap: () {
-                            _selectTime(context);
-                          },
+                    ),
+                  ],
+                ),
+                SizedBox(width: 30),
+                Column(
+                  children: [
+                    // date picker
+                    FlatButton.icon(
+                      onPressed: () {
+                        _selectDate(context);
+                      },
+                      icon: Icon(Icons.date_range),
+                      label: Text("Date Picker"),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(30, 10, 0, 0),
+                      child: GestureDetector(
+                        child: Text(
+                          _datepick,
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: 30),
-                  Column(
-                    children: [
-                      // date picker
-                      FlatButton.icon(
-                        onPressed: () {
+                        onTap: () {
                           _selectDate(context);
                         },
-                        icon: Icon(Icons.date_range),
-                        label: Text("Date Picker"),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 10, 0, 0),
-                        child: GestureDetector(
-                          child: Text(
-                            _datepick,
-                            style: TextStyle(fontSize: 16, color: Colors.black),
-                          ),
-                          onTap: () {
-                            _selectDate(context);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
+              child: Text(
+                "Time Picked is \n\n $_timeANDdate",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.black),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width - 60,
+              child: RaisedButton(
+                color: Colors.amber,
+                onPressed: () => insertToDo(),
                 child: Text(
-                  "Time Picked is \n\n $_timeANDdate",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: Colors.black),
+                  "Insert Todo",
+                  style: TextStyle(
+                    fontSize: 24,
+                  ),
                 ),
+                padding: EdgeInsets.symmetric(vertical: 15),
+                elevation: 7,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
               ),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.green,
-                ),
-                child: FlatButton(
-                  onPressed: () {
-                    insertToDo();
-                  },
-                  child: Text('insert'),
-                ),
-              ),
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );
@@ -187,14 +189,15 @@ class _InsertState extends State<Insert> {
     // print(_timepic.toString() + '' + _datepick.toString());
   }
 
-  void insertToDo() async {
+  insertToDo() async {
+    final _todo = ToDoList(
+      title: titleController.text.toString(),
+      desc: descController.text.toString(),
+      time: time(),
+      id: 12,
+    );
     if (titleController.value.text.length != 0 &&
         descController.value.text.length != 0) {
-      var _todo = ToDoList(
-        title: titleController.text.toString(),
-        desc: titleController.text.toString(),
-        time: time(),
-      );
       // int id = await DatabaseHelper.instacne.insert(
       //   {
       //     DatabaseHelper.colTitle: titleController.text.toString(),
@@ -202,8 +205,15 @@ class _InsertState extends State<Insert> {
       //     DatabaseHelper.colTime: time()
       //   }, // {"title" : "title", "desc": "description", "time": "time"}
       // );
-      _databaseHelper.insert(_todo);
-      if (_todo != null) {
+      var res = await DatabaseHelper.instacne.insert(
+        ToDoList(
+          title: titleController.text.toString(),
+          desc: descController.text.toString(),
+          time: time(),
+        ),
+      );
+
+      if (res != null) {
         Fluttertoast.showToast(
           msg: "ADD Done :)",
           backgroundColor: Colors.green,
@@ -218,10 +228,10 @@ class _InsertState extends State<Insert> {
       //   builder: (context) => MyApp(),
       // ));
 
-      loadAlarms();
-      scheduleAlarm(
-          scheduledNotificationDateTime: DateTime.parse(time()),
-          toDoList: _todo);
+      // loadAlarms();
+      // scheduleAlarm(
+      //     scheduledNotificationDateTime: DateTime.parse(time()),
+      //     toDoList: _todo);
     } else {
       Fluttertoast.showToast(
           msg: "Inputs \'s Empty", backgroundColor: Colors.red);
