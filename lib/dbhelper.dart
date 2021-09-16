@@ -53,12 +53,14 @@ class DatabaseHelper {
     return await db.query(tableName);
   } //return List Map <String , {dynamic> "id":1, "name": "Name"}
 
-  // Future<int> update(Map<String, dynamic> row) async {
-  //   Database db = await instacne.get_database;
-  //   int id = row[colId];
-  //   return await db
-  //       .update(tableName, row, where: '$colId = ?', whereArgs: [id]);
-  // }
+  Future<int> update(Map<String, dynamic> row, int id) async {
+    Database db = await DatabaseHelper.instacne.get_database;
+    var res = await db.update(tableName, row,
+        where: '${DatabaseHelper.colId} = ?', whereArgs: [id]);
+    print(res);
+    print(await db.query(DatabaseHelper.tableName));
+    return res;
+  }
 
   delete(int id) async {
     Database db = await instacne.get_database;
@@ -69,22 +71,18 @@ class DatabaseHelper {
     Database db = await instacne.get_database;
     List<Map<String, dynamic>> x =
         await db.rawQuery('SELECT COUNT (*) from $tableName');
-    print("x : $x");
     int result = Sqflite.firstIntValue(x);
-    print("result get count : $result");
     return result;
   }
 
-  Future<List<ToDoList>> getAlarms() async {
+  Future<List<ToDoList>> getAlls() async {
     List<ToDoList> _alarms = [];
-
     var db = await instacne.get_database;
-    var result = await db.query(tableName);
+    var result = await db.rawQuery('select * from $tableName');
     result.forEach((element) {
       var alarmInfo = ToDoList.fromMap(element);
       _alarms.add(alarmInfo);
     });
-
     return _alarms;
   }
 }

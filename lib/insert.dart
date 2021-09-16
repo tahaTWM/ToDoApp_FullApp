@@ -17,36 +17,53 @@ class _InsertState extends State<Insert> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
   Future<List<ToDoList>> _alarms;
-  DatabaseHelper _databaseHelper;
+
+  @override
+  void initState() {
+    loadAlarms();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        body: ListView(
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              "assets/logo.png",
+              width: width > 400 ? 300 : 200,
+              height: width > 400 ? 300 : 200,
+            ),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: TextField(
+              child: TextFormField(
                 maxLength: 8,
                 controller: titleController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30)),
                   labelText: 'ToDo Title',
+                  hintText: 'title',
+                  contentPadding: EdgeInsets.only(left: 25),
                 ),
-                onSubmitted: (value) => insertToDo(),
+                onFieldSubmitted: (value) => insertToDo(),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: TextField(
+              child: TextFormField(
                 maxLength: 15,
                 controller: descController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  contentPadding: EdgeInsets.only(left: 25),
                   labelText: 'ToDo Description',
                 ),
-                onSubmitted: (value) => insertToDo(),
+                onFieldSubmitted: (value) => insertToDo(),
               ),
             ),
             Row(
@@ -62,17 +79,9 @@ class _InsertState extends State<Insert> {
                       icon: Icon(Icons.timer),
                       label: Text("Time Picker"),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
-                      child: GestureDetector(
-                        child: Text(
-                          _timepic,
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                        ),
-                        onTap: () {
-                          _selectTime(context);
-                        },
-                      ),
+                    Text(
+                      _timepic,
+                      style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
                   ],
                 ),
@@ -87,32 +96,17 @@ class _InsertState extends State<Insert> {
                       icon: Icon(Icons.date_range),
                       label: Text("Date Picker"),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 10, 0, 0),
-                      child: GestureDetector(
-                        child: Text(
-                          _datepick,
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                        ),
-                        onTap: () {
-                          _selectDate(context);
-                        },
-                      ),
+                    Text(
+                      _datepick,
+                      style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
                   ],
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
-              child: Text(
-                "Time Picked is \n\n $_timeANDdate",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.black),
-              ),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width - 60,
+            SizedBox(height: 20),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: RaisedButton(
                 color: Colors.amber,
                 onPressed: () => insertToDo(),
@@ -217,16 +211,21 @@ class _InsertState extends State<Insert> {
         Fluttertoast.showToast(
           msg: "ADD Done :)",
           backgroundColor: Colors.green,
+          toastLength: Toast.LENGTH_LONG,
         );
+        await Future.delayed(Duration(seconds: 2));
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => MyApp(),
+            ),
+            (route) => false);
       } else {
         Fluttertoast.showToast(
           msg: "Adding Error :(",
           backgroundColor: Colors.red,
+          toastLength: Toast.LENGTH_LONG,
         );
       }
-      // Navigator.of(context).push(MaterialPageRoute(
-      //   builder: (context) => MyApp(),
-      // ));
 
       // loadAlarms();
       // scheduleAlarm(
@@ -265,8 +264,10 @@ class _InsertState extends State<Insert> {
     );
   }
 
-  loadAlarms() {
-    _alarms = _databaseHelper.getAlarms();
-    if (mounted) setState(() {});
+  loadAlarms() async {
+    var _all = await DatabaseHelper.instacne.getAlls();
+    _all.forEach((element) {
+      print(element.toMap());
+    });
   }
 }

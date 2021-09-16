@@ -35,7 +35,12 @@ class _DisplayState extends State<Display> {
               )
             : ListView.builder(
                 itemBuilder: (BuildContext buildContext, int index) {
-                  return Card(
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 1),
+                    padding: EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                        color: Colors.amber.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(30)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -47,10 +52,67 @@ class _DisplayState extends State<Display> {
                           subtitle:
                               Text(_listRow[index][DatabaseHelper.colTime]),
                           // ignore: deprecated_member_use
-                          trailing: FlatButton.icon(
-                              onPressed: () {},
-                              icon: Icon(Icons.more_vert),
-                              label: Text("More")),
+                          trailing: PopupMenuButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15.0))),
+                            icon: Icon(
+                              Icons.more_vert,
+                              color: Colors.black,
+                              // size: 40,
+                            ),
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                value: 1,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.edit,
+                                      size: 25,
+                                      // color:
+                                      //     Color.fromRGBO(158, 158, 158, 1),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      "Edit",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontFamily: "RubicB",
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                            onSelected: (item) {
+                              switch (item) {
+                                case 1:
+                                  {
+                                    Map<String, dynamic> update = {
+                                      // "colId": _listRow[index]
+                                      //     [DatabaseHelper.colId],
+                                      DatabaseHelper.colTitle: "test test",
+                                      // _listRow[index]
+                                      //     [DatabaseHelper.colTitle],
+                                      DatabaseHelper.colDesc: "desc desc",
+                                      DatabaseHelper.colTime: _listRow[index]
+                                          [DatabaseHelper.colTime],
+                                    };
+
+                                    DatabaseHelper.instacne.update(update,
+                                        _listRow[index][DatabaseHelper.colId]);
+                                    setState(() {
+                                      preper();
+                                    });
+                                  }
+                                  break;
+                              }
+                            },
+                          ),
+                          // FlatButton.icon(
+                          //     onPressed: () {},
+                          //     icon: Icon(Icons.more_vert),
+                          //     label: Text("More")),
                         ),
                         Padding(
                             padding: const EdgeInsets.fromLTRB(20, 10, 0, 10),
@@ -60,18 +122,17 @@ class _DisplayState extends State<Display> {
                                   fontSize: 19, fontWeight: FontWeight.bold),
                             )),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
+                            // ignore: deprecated_member_use
                             FlatButton.icon(
-                              splashColor: Colors.red,
+                              color: Colors.amber[200],
+                              splashColor: Colors.red[200],
                               shape: RoundedRectangleBorder(
                                   side: BorderSide(
-                                      color: Colors.red,
-                                      width: 2,
+                                      color: Colors.red[500],
                                       style: BorderStyle.solid),
                                   borderRadius: BorderRadius.circular(50)),
-                              // RoundedRectangleBorder(
-                              // borderRadius: BorderRadius.circular(20)),
                               onPressed: () {
                                 setState(() {
                                   DatabaseHelper.instacne.delete(
@@ -80,7 +141,7 @@ class _DisplayState extends State<Display> {
                                 });
                               },
                               icon: Icon(
-                                Icons.delete,
+                                Icons.archive,
                                 color: Colors.red,
                               ),
                               label: Text(
@@ -88,11 +149,30 @@ class _DisplayState extends State<Display> {
                                 style: TextStyle(color: Colors.red),
                               ),
                             ),
+                            // ignore: deprecated_member_use
+                            FlatButton.icon(
+                              color: Colors.amber[200],
+                              splashColor: Colors.green[200],
+                              shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                      color: Colors.green[500],
+                                      style: BorderStyle.solid),
+                                  borderRadius: BorderRadius.circular(50)),
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.done_all,
+                                color: Colors.green,
+                              ),
+                              label: Text(
+                                "Done",
+                                style: TextStyle(color: Colors.green),
+                              ),
+                            ),
                           ],
-                        )
+                        ),
                       ],
                     ),
-                    elevation: 6,
+                    // elevation: 6,
                   );
                 },
                 itemCount: length,
@@ -114,7 +194,6 @@ class _DisplayState extends State<Display> {
   getAllCount() {
     var getcount = DatabaseHelper.instacne.getCount();
     getcount.then((value) {
-      print(value);
       setState(() {
         length = value;
       });
